@@ -6,32 +6,71 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+    overflow: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .game-container {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     padding: 30px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 25px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
 }
 
 h1 {
-    font-size: 2.5em;
+    font-size: 2.8em;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7aa, #ff8a80);
+    background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: textGradient 4s ease infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes textGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .game-info {
@@ -43,18 +82,40 @@ h1 {
 }
 
 .score, .high-score {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px 20px;
-    border-radius: 25px;
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.25);
+    padding: 12px 24px;
+    border-radius: 30px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.score:hover, .high-score:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 #gameCanvas {
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.3);
+    border: 4px solid rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.4);
     margin: 20px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+#gameCanvas:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.1);
 }
 
 .controls {
@@ -62,22 +123,53 @@ h1 {
 }
 
 .controls button {
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7aa);
+    background-size: 200% 200%;
     color: white;
     border: none;
-    padding: 12px 24px;
-    margin: 0 10px;
-    border-radius: 25px;
+    padding: 14px 28px;
+    margin: 0 8px;
+    border-radius: 30px;
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    animation: buttonGradient 3s ease infinite;
+}
+
+@keyframes buttonGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.auto-btn {
+    background: linear-gradient(45deg, #9c27b0, #e91e63, #ff5722) !important;
+    animation: autoButtonGlow 2s ease infinite !important;
+}
+
+.auto-btn.active {
+    background: linear-gradient(45deg, #4caf50, #8bc34a, #cddc39) !important;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6),
+                0 6px 20px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+@keyframes autoButtonGlow {
+    0% { box-shadow: 0 0 5px rgba(156, 39, 176, 0.5), 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(156, 39, 176, 0.8), 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+    100% { box-shadow: 0 0 5px rgba(156, 39, 176, 0.5), 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
 }
 
 .controls button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .controls button:active {
@@ -207,4 +299,57 @@ h1 {
 
 .score-animation {
     animation: scoreIncrease 0.3s ease-in-out;
+}
+
+/* Particle effects */
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #ff6b6b, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFloat 1s ease-out forwards;
+}
+
+@keyframes particleFloat {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-50px);
+    }
+}
+
+/* Enhanced food pulse effect */
+.food-pulse {
+    animation: foodPulse 1s ease-in-out infinite;
+}
+
+@keyframes foodPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Snake trail effect */
+.snake-trail {
+    position: absolute;
+    background: radial-gradient(circle, rgba(78, 205, 196, 0.6), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: trailFade 0.5s ease-out forwards;
+}
+
+@keyframes trailFade {
+    0% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
 }

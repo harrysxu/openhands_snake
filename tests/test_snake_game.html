@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #gameFrame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐍 贪吃蛇游戏功能测试</h1>
+    
+    <div class="test-container">
+        <h2>自动化测试结果</h2>
+        <div id="testResults"></div>
+        <button onclick="runTests()">运行测试</button>
+        <button onclick="loadGame()">加载游戏</button>
+    </div>
+    
+    <div class="test-container">
+        <h2>游戏预览</h2>
+        <iframe id="gameFrame" src="../index.html"></iframe>
+    </div>
+    
+    <div class="test-container">
+        <h2>手动测试清单</h2>
+        <div class="test-info">
+            <h3>✅ 需要验证的功能：</h3>
+            <ul>
+                <li><strong>自动模式：</strong> 点击"自动模式"按钮，蛇应该自动避开墙壁并寻找食物</li>
+                <li><strong>视觉效果：</strong> 
+                    <ul>
+                        <li>背景应该有动态渐变效果</li>
+                        <li>蛇头应该有眼睛和发光效果</li>
+                        <li>食物应该有脉动效果</li>
+                        <li>吃食物时应该有粒子爆炸效果</li>
+                        <li>蛇移动时应该有轨迹效果</li>
+                    </ul>
+                </li>
+                <li><strong>AI智能：</strong> 自动模式下蛇应该能够找到最短路径到食物，无路径时应该安全移动</li>
+                <li><strong>按钮状态：</strong> 自动模式按钮应该正确显示当前状态（自动模式/手动模式）</li>
+                <li><strong>控制禁用：</strong> 自动模式下键盘和触摸控制应该被禁用</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function addTestResult(message, isPass, isInfo = false) {
+            const resultsDiv = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = isInfo ? 'test-info' : (isPass ? 'test-pass' : 'test-fail');
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function runTests() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '';
+            
+            addTestResult('开始运行自动化测试...', true, true);
+            
+            // 测试文件存在性
+            const testFiles = [
+                '../index.html',
+                '../script.js', 
+                '../style.css',
+                '../server.py'
+            ];
+            
+            testFiles.forEach(file => {
+                fetch(file)
+                    .then(response => {
+                        if (response.ok) {
+                            addTestResult(`✅ 文件存在: ${file}`, true);
+                        } else {
+                            addTestResult(`❌ 文件缺失: ${file}`, false);
+                        }
+                    })
+                    .catch(error => {
+                        addTestResult(`❌ 无法访问文件: ${file}`, false);
+                    });
+            });
+            
+            // 测试HTML结构
+            fetch('../index.html')
+                .then(response => response.text())
+                .then(html => {
+                    const hasAutoButton = html.includes('autoBtn') || html.includes('自动模式');
+                    addTestResult(`${hasAutoButton ? '✅' : '❌'} HTML包含自动模式按钮`, hasAutoButton);
+                    
+                    const hasInstructions = html.includes('AI自动控制') || html.includes('自动模式');
+                    addTestResult(`${hasInstructions ? '✅' : '❌'} 说明文档已更新`, hasInstructions);
+                });
+            
+            // 测试CSS增强
+            fetch('../style.css')
+                .then(response => response.text())
+                .then(css => {
+                    const hasGradientAnimation = css.includes('gradientShift') || css.includes('background-size: 400%');
+                    addTestResult(`${hasGradientAnimation ? '✅' : '❌'} CSS包含动态背景效果`, hasGradientAnimation);
+                    
+                    const hasAutoButtonStyles = css.includes('auto-btn') || css.includes('autoButtonGlow');
+                    addTestResult(`${hasAutoButtonStyles ? '✅' : '❌'} CSS包含自动按钮样式`, hasAutoButtonStyles);
+                    
+                    const hasParticleStyles = css.includes('particle') || css.includes('particleFloat');
+                    addTestResult(`${hasParticleStyles ? '✅' : '❌'} CSS包含粒子效果样式`, hasParticleStyles);
+                });
+            
+            // 测试JavaScript功能
+            fetch('../script.js')
+                .then(response => response.text())
+                .then(js => {
+                    const hasAutoMode = js.includes('autoMode') && js.includes('toggleAutoMode');
+                    addTestResult(`${hasAutoMode ? '✅' : '❌'} JavaScript包含自动模式功能`, hasAutoMode);
+                    
+                    const hasPathfinding = js.includes('findPath') && js.includes('heuristic');
+                    addTestResult(`${hasPathfinding ? '✅' : '❌'} JavaScript包含A*寻路算法`, hasPathfinding);
+                    
+                    const hasParticles = js.includes('particles') && js.includes('addParticles');
+                    addTestResult(`${hasParticles ? '✅' : '❌'} JavaScript包含粒子效果`, hasParticles);
+                    
+                    const hasTrails = js.includes('trails') && js.includes('drawTrails');
+                    addTestResult(`${hasTrails ? '✅' : '❌'} JavaScript包含轨迹效果`, hasTrails);
+                    
+                    const hasAutoControl = js.includes('autoControl') && js.includes('getSafeMove');
+                    addTestResult(`${hasAutoControl ? '✅' : '❌'} JavaScript包含AI控制逻辑`, hasAutoControl);
+                });
+            
+            setTimeout(() => {
+                addTestResult('自动化测试完成！请进行手动测试验证功能。', true, true);
+            }, 2000);
+        }
+        
+        function loadGame() {
+            const frame = document.getElementById('gameFrame');
+            frame.src = '../index.html?' + Date.now(); // 强制刷新
+        }
+        
+        // 页面加载时自动运行测试
+        window.onload = function() {
+            runTests();
+            loadGame();
+        };
+    </script>
+</body>
+</html>
