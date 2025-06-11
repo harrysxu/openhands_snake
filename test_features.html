@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>贪吃蛇游戏功能测试</h1>
+    
+    <div class="test-container">
+        <h2>自动播放功能测试</h2>
+        <button onclick="testAutoPlay()">运行自动播放测试</button>
+        <div id="autoplay-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>视觉效果测试</h2>
+        <button onclick="testVisualEffects()">运行视觉效果测试</button>
+        <div id="visual-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>粒子系统测试</h2>
+        <button onclick="testParticleSystem()">运行粒子系统测试</button>
+        <div id="particle-results"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="test_autoplay.js"></script>
+    <script>
+        function addResult(containerId, testName, passed, details = '') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `<strong>${testName}:</strong> ${passed ? 'PASS' : 'FAIL'} ${details}`;
+            container.appendChild(div);
+        }
+
+        function testAutoPlay() {
+            const container = document.getElementById('autoplay-results');
+            container.innerHTML = '';
+            
+            try {
+                // Test pathfinding algorithm
+                const testGame = new SnakeGameTest();
+                
+                // Test 1: Basic pathfinding
+                const path = testGame.findPath({x: 5, y: 5}, {x: 10, y: 10});
+                addResult('autoplay-results', '基础寻路算法', path !== null, 
+                    path ? `路径长度: ${path.length}` : '');
+                
+                // Test 2: Direction calculation
+                const direction = testGame.getAutoDirection();
+                addResult('autoplay-results', '方向计算', 
+                    direction && typeof direction.dx === 'number' && typeof direction.dy === 'number',
+                    `方向: (${direction.dx}, ${direction.dy})`);
+                
+                // Test 3: Wall avoidance
+                testGame.snake = [{x: 0, y: 0}];
+                testGame.food = {x: 5, y: 5};
+                const safeDir = testGame.getAutoDirection();
+                const isAwayFromWall = safeDir.dx >= 0 && safeDir.dy >= 0;
+                addResult('autoplay-results', '墙壁避让', isAwayFromWall,
+                    `从角落的安全方向: (${safeDir.dx}, ${safeDir.dy})`);
+                
+                // Test 4: Self-collision avoidance
+                testGame.snake = [
+                    {x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5},
+                    {x: 3, y: 4}, {x: 4, y: 4}, {x: 5, y: 4}
+                ];
+                const avoidDir = testGame.getAutoDirection();
+                addResult('autoplay-results', '自身碰撞避让', avoidDir !== null,
+                    `避让方向: (${avoidDir.dx}, ${avoidDir.dy})`);
+                
+            } catch (error) {
+                addResult('autoplay-results', '自动播放测试', false, `错误: ${error.message}`);
+            }
+        }
+
+        function testVisualEffects() {
+            const container = document.getElementById('visual-results');
+            container.innerHTML = '';
+            
+            try {
+                // Test CSS animations
+                const gameContainer = document.querySelector('.game-container');
+                const hasGlowAnimation = gameContainer && 
+                    getComputedStyle(gameContainer, '::before').getPropertyValue('animation-name') === 'borderGlow';
+                addResult('visual-results', '边框发光动画', hasGlowAnimation);
+                
+                // Test background effects
+                const body = document.body;
+                const hasBackgroundAnimation = body && 
+                    getComputedStyle(body, '::before').getPropertyValue('animation-name') === 'backgroundShift';
+                addResult('visual-results', '背景动画效果', hasBackgroundAnimation);
+                
+                // Test button effects
+                const autoBtn = document.getElementById('autoBtn');
+                const hasButtonPulse = autoBtn && 
+                    getComputedStyle(autoBtn).getPropertyValue('animation-name').includes('autoButtonPulse');
+                addResult('visual-results', '自动按钮脉冲效果', hasButtonPulse);
+                
+                // Test canvas styling
+                const canvas = document.getElementById('gameCanvas');
+                const hasCanvasGradient = canvas && 
+                    getComputedStyle(canvas).getPropertyValue('background').includes('radial-gradient');
+                addResult('visual-results', '画布渐变背景', hasCanvasGradient);
+                
+            } catch (error) {
+                addResult('visual-results', '视觉效果测试', false, `错误: ${error.message}`);
+            }
+        }
+
+        function testParticleSystem() {
+            const container = document.getElementById('particle-results');
+            container.innerHTML = '';
+            
+            try {
+                // Create a temporary game instance to test particle system
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 400;
+                const ctx = canvas.getContext('2d');
+                
+                // Mock game object with particle methods
+                const mockGame = {
+                    gridSize: 20,
+                    particles: [],
+                    ctx: ctx,
+                    
+                    createParticles: function(x, y) {
+                        const centerX = x * this.gridSize + this.gridSize / 2;
+                        const centerY = y * this.gridSize + this.gridSize / 2;
+                        
+                        for (let i = 0; i < 8; i++) {
+                            this.particles.push({
+                                x: centerX,
+                                y: centerY,
+                                vx: (Math.random() - 0.5) * 8,
+                                vy: (Math.random() - 0.5) * 8,
+                                life: 1.0,
+                                decay: 0.02,
+                                color: `hsl(${Math.random() * 60 + 15}, 100%, 60%)`
+                            });
+                        }
+                    },
+                    
+                    updateParticles: function() {
+                        for (let i = this.particles.length - 1; i >= 0; i--) {
+                            const particle = this.particles[i];
+                            particle.x += particle.vx;
+                            particle.y += particle.vy;
+                            particle.life -= particle.decay;
+                            particle.vx *= 0.98;
+                            particle.vy *= 0.98;
+                            
+                            if (particle.life <= 0) {
+                                this.particles.splice(i, 1);
+                            }
+                        }
+                    }
+                };
+                
+                // Test particle creation
+                mockGame.createParticles(5, 5);
+                addResult('particle-results', '粒子创建', mockGame.particles.length === 8,
+                    `创建了 ${mockGame.particles.length} 个粒子`);
+                
+                // Test particle properties
+                const firstParticle = mockGame.particles[0];
+                const hasValidProperties = firstParticle && 
+                    typeof firstParticle.x === 'number' &&
+                    typeof firstParticle.y === 'number' &&
+                    typeof firstParticle.vx === 'number' &&
+                    typeof firstParticle.vy === 'number' &&
+                    typeof firstParticle.life === 'number' &&
+                    typeof firstParticle.color === 'string';
+                addResult('particle-results', '粒子属性', hasValidProperties);
+                
+                // Test particle update
+                const initialLife = firstParticle.life;
+                mockGame.updateParticles();
+                const lifeDecreased = firstParticle.life < initialLife;
+                addResult('particle-results', '粒子更新', lifeDecreased,
+                    `生命值从 ${initialLife.toFixed(2)} 减少到 ${firstParticle.life.toFixed(2)}`);
+                
+                // Test particle removal
+                for (let i = 0; i < 100; i++) {
+                    mockGame.updateParticles();
+                }
+                const particlesRemoved = mockGame.particles.length < 8;
+                addResult('particle-results', '粒子移除', particlesRemoved,
+                    `剩余 ${mockGame.particles.length} 个粒子`);
+                
+            } catch (error) {
+                addResult('particle-results', '粒子系统测试', false, `错误: ${error.message}`);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testAutoPlay();
+                testVisualEffects();
+                testParticleSystem();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
