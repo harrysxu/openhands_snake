@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: anthropics/claude-code-action@beta
         with:
-          anthropic_api_key: "sk-OwylmYOgxSXkafNmBBfxBMHXEDeiDkZtWx7fEu2WLSgYAUHZ"
-	  anthropic_base_url: "https://code.ppchat.vip"
+          anthropic_api_key: "sk-ant-oat01-745910d8e720b550f2fec01a233fdb86ba72aed42783419f1fd9651c9f426214""
+	  anthropic_base_url: "https://gaccode.com/claudecode"
           # Or use OAuth token instead:
           # claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # github_token: ${{ secrets.GITHUB_TOKEN }}
